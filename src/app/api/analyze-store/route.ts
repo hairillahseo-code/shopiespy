@@ -55,16 +55,55 @@ export async function POST(request: Request) {
     // 2. Detect Apps based on script tags & keywords in HTML
     const detectedApps: string[] = [];
     
+    // Marketing & Email
     if (htmlString.includes('klaviyo.com')) detectedApps.push('Klaviyo');
-    if (htmlString.includes('loox.io') || htmlString.includes('loox-reviews')) detectedApps.push('Loox Reviews');
-    if (htmlString.includes('smile.io')) detectedApps.push('Smile.io (Rewards)');
-    if (htmlString.includes('judge.me')) detectedApps.push('Judge.me');
-    if (htmlString.includes('gorgias.chat') || htmlString.includes('gorgias.io')) detectedApps.push('Gorgias Chat');
-    if (htmlString.includes('yotpo.com')) detectedApps.push('Yotpo');
-    if (htmlString.includes('sezzle.com')) detectedApps.push('Sezzle');
-    if (htmlString.includes('afterpay.com')) detectedApps.push('Afterpay');
     if (htmlString.includes('omnisend')) detectedApps.push('Omnisend');
     if (htmlString.includes('privy.com')) detectedApps.push('Privy');
+    if (htmlString.includes('mailchimp')) detectedApps.push('Mailchimp');
+    if (htmlString.includes('seguno')) detectedApps.push('Seguno');
+
+    // Reviews & Trust
+    if (htmlString.includes('loox.io') || htmlString.includes('loox-reviews')) detectedApps.push('Loox Reviews');
+    if (htmlString.includes('judge.me')) detectedApps.push('Judge.me');
+    if (htmlString.includes('yotpo.com')) detectedApps.push('Yotpo');
+    if (htmlString.includes('stamped.io')) detectedApps.push('Stamped.io');
+    if (htmlString.includes('alireviews') || htmlString.includes('ali-reviews')) detectedApps.push('AliReviews');
+    if (htmlString.includes('trustpilot')) detectedApps.push('Trustpilot');
+
+    // Rewards & Loyalty
+    if (htmlString.includes('smile.io')) detectedApps.push('Smile.io (Rewards)');
+    if (htmlString.includes('swellrewards')) detectedApps.push('Yotpo Loyalty (Swell)');
+
+    // Customer Service & Chat
+    if (htmlString.includes('gorgias.chat') || htmlString.includes('gorgias.io')) detectedApps.push('Gorgias Chat');
+    if (htmlString.includes('tidiochat.com') || htmlString.includes('tidio')) detectedApps.push('Tidio Chat');
+    if (htmlString.includes('zendesk.com')) detectedApps.push('Zendesk');
+    if (htmlString.includes('shopify-chat') || htmlString.includes('shopify_inbox')) detectedApps.push('Shopify Inbox');
+    if (htmlString.includes('tawk.to')) detectedApps.push('Tawk.to');
+
+    // Payments & Subscriptions
+    if (htmlString.includes('sezzle.com')) detectedApps.push('Sezzle');
+    if (htmlString.includes('afterpay.com')) detectedApps.push('Afterpay');
+    if (htmlString.includes('klarna.com')) detectedApps.push('Klarna');
+    if (htmlString.includes('shoppay') || htmlString.includes('shop_pay')) detectedApps.push('Shop Pay');
+    if (htmlString.includes('rechargeapps.com')) detectedApps.push('ReCharge Subscriptions');
+
+    // Tracking & Analytics
+    if (htmlString.includes('connect.facebook.net') || htmlString.includes('fbq(')) detectedApps.push('Facebook Pixel');
+    if (htmlString.includes('analytics.tiktok.com') || htmlString.includes('ttq.load')) detectedApps.push('TikTok Pixel');
+    if (htmlString.includes('googletagmanager.com') || htmlString.includes('gtag(')) detectedApps.push('Google Analytics (GA4)');
+    if (htmlString.includes('hotjar.com')) detectedApps.push('Hotjar');
+    if (htmlString.includes('snap.licdn.com')) detectedApps.push('LinkedIn Insight Tag');
+    if (htmlString.includes('pinterest.com/ct')) detectedApps.push('Pinterest Tag');
+
+    // Page Builders & Others
+    if (htmlString.includes('pagefly')) detectedApps.push('PageFly Builder');
+    if (htmlString.includes('shogun')) detectedApps.push('Shogun Builder');
+    if (htmlString.includes('gempages')) detectedApps.push('GemPages Builder');
+    if (htmlString.includes('vitals.co')) detectedApps.push('Vitals: 40+ Apps in One');
+    if (htmlString.includes('printful.com')) detectedApps.push('Printful (POD)');
+    if (htmlString.includes('printify.com')) detectedApps.push('Printify (POD)');
+    if (htmlString.includes('routeapp.io')) detectedApps.push('Route (Package Protection)');
 
     // 3. Extract Products (Real Best-Sellers via HTML Scraping + JSON API)
     let extractedProducts: any[] = [];
