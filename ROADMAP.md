@@ -99,7 +99,7 @@ Proyek ini dibangun dengan objektif untuk menjadi utilitas **Shopify Intelligenc
 
 ### 📋 Fase 13: Flippa Exit Asset Kit & Buyer Handover Documentation
 *Mempersiapkan seluruh materi penjualan agar listing di Flippa cepat laku dalam 7–14 hari.*
-- [ ] Buat dokumen komprehensif `FLIPPA_LISTING_PLAYBOOK.md`:
+- [x] Buat dokumen komprehensif `FLIPPA_LISTING_PLAYBOOK.md`:
   - **Copywriting Listing Flippa Berbahasa Inggris Profesional**: Memaparkan nilai SaaS, Next.js 15, Supabase, Stripe/PayPal Sandbox, dan keunggulan kompetitif dibanding PPSPY/Koala Inspector.
   - **Petunjuk Serah Terima Pembeli (Buyer Handover Guide)**: Panduan langkah demi langkah cara mengganti API Key Stripe/PayPal ke mode Live, mentransfer akun Supabase, dan menghubungkan domain kustom.
   - **Strategi Monetisasi & Pertumbuhan**: Saran cara menjalankan SEO, TikTok Organic, dan Reddit marketing untuk pemilik baru.
