@@ -213,35 +213,19 @@ export default function Home() {
 
   const fetchCredits = async (userObj: any) => {
     try {
-      const { data } = await supabase.from('profiles').select('credits').eq('id', userObj.id).maybeSingle();
-      if (data && typeof data.credits === 'number') {
+      const res = await fetch('/api/user/credits', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: userObj.id, email: userObj.email })
+      });
+      const data = await res.json();
+      if (data.success && typeof data.credits === 'number') {
         setCredits(data.credits);
       } else {
-        const initialCredits = userObj.email === 'admin@shopiespy.com' ? 9999 : 3;
-        const initialRole = userObj.email === 'admin@shopiespy.com' ? 'admin' : 'user';
-        const initialPlan = userObj.email === 'admin@shopiespy.com' ? 'agency' : 'free';
-
-        const { data: newData } = await supabase
-          .from('profiles')
-          .insert([{ 
-            id: userObj.id, 
-            email: userObj.email, 
-            credits: initialCredits,
-            role: initialRole,
-            plan: initialPlan,
-            updated_at: new Date().toISOString()
-          }])
-          .select()
-          .maybeSingle();
-
-        if (newData && typeof newData.credits === 'number') {
-          setCredits(newData.credits);
-        } else {
-          setCredits(initialCredits);
-        }
+        setCredits(userObj.email === 'admin@shopiespy.com' || userObj.email === 'superadmin@shopiespy.com' ? -1 : 3);
       }
     } catch {
-      setCredits(userObj.email === 'admin@shopiespy.com' ? 9999 : 3);
+      setCredits(userObj.email === 'admin@shopiespy.com' || userObj.email === 'superadmin@shopiespy.com' ? -1 : 3);
     }
   };
 

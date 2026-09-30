@@ -39,8 +39,19 @@ export default function BattlePage() {
   };
 
   const fetchCredits = async (userId: string) => {
-    const { data } = await supabase.from('profiles').select('credits').eq('id', userId).single();
-    if (data) setCredits(data.credits);
+    try {
+      const res = await fetch('/api/user/credits', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, email: user?.email })
+      });
+      const data = await res.json();
+      if (data.success && typeof data.credits === 'number') {
+        setCredits(data.credits);
+      }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const deductCredit = async () => {
