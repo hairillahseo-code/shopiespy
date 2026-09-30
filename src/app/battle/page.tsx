@@ -45,7 +45,9 @@ export default function BattlePage() {
 
   const deductCredit = async () => {
     if (!user) return false;
-    if (user.email === 'admin@shopiespy.com' || user.email === 'superadmin@shopiespy.com') return true;
+    // Allow if user is admin email OR has unlimited credits (-1)
+    if (user.email === 'admin@shopiespy.com' || user.email === 'superadmin@shopiespy.com' || credits === -1) return true;
+    
     if (credits === null || credits <= 0) return false;
     
     const { error } = await supabase.from('profiles').update({ credits: credits - 1 }).eq('id', user.id);
@@ -65,7 +67,7 @@ export default function BattlePage() {
       setError("Please login on the main page first.");
       return;
     }
-    if (credits === null || credits <= 0) {
+    if (credits === null || (credits <= 0 && credits !== -1)) {
       setError("Not enough credits. Please recharge on the main page.");
       return;
     }
