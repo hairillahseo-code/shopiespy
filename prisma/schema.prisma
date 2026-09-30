@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Profile {
+  id            String          @id // Supabase auth.users ID (UUID)
+  email         String          @unique
+  role          String          @default("user") // "user" | "admin"
+  credits       Int             @default(3)
+  plan          String          @default("free") // "free" | "pro" | "agency"
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @default(now()) @updatedAt @map("updated_at")
+
+  storeAnalyses StoreAnalysis[]
+  savedProducts SavedProduct[]
+
+  @@map("profiles")
+}
+
+model StoreAnalysis {
+  id           String   @id @default(cuid())
+  userId       String   @map("user_id")
+  storeUrl     String   @map("store_url")
+  storeName    String?  @map("store_name")
+  currency     String?
+  productCount Int      @default(0) @map("product_count")
+  topVendor    String?  @map("top_vendor")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  profile      Profile  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("store_analyses")
+}
+
+model SavedProduct {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  storeUrl    String   @map("store_url")
+  title       String
+  price       String?
+  handle      String?
+  vendor      String?
+  productType String?  @map("product_type")
+  imageUrl    String?  @map("image_url")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  profile     Profile  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("saved_products")
+}
+
+model SystemSetting {
+  id        String   @id @default("default")
+  key       String   @unique
+  value     String   @db.Text
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("system_settings")
+}
+

@@ -1,0 +1,6 @@
+{
+  "name": "ShopiRank - Shopify SEO Copywriter",
+  "description": "AI-powered Shopify SEO copywriting engine generating conversion-tuned product descriptions, HTML rich text tags, and Google SERP previews.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
