@@ -806,7 +806,7 @@ export default function Home() {
 
                       {/* AI Rewrite Button */}
                       <button 
-                        onClick={() => handleRewrite(product)}
+                        onClick={() => handleRewrite(product.title || '', product.product_type || '', product.body_html || '')}
                         disabled={rewritingProduct === product.title}
                         className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-[0_0_15px_rgba(16,185,129,0.2)]"
                       >
