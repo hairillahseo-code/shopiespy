@@ -162,9 +162,9 @@ export async function POST(request: Request) {
         }
       }
       
-      // Step C: Fallback (Jika proteksi toko sangat kuat / scraping gagal)
-      // Kita gunakan products.json sebagai cadangan agar aplikasi tidak pernah error/kosong
-      if (extractedProducts.length === 0) {
+      // Step C: Fallback (Jika proteksi toko sangat kuat / scraping gagal, atau produk terdeteksi sangat sedikit)
+      // Kita gunakan products.json sebagai cadangan agar aplikasi selalu menampilkan data
+      if (extractedProducts.length < 4) {
         const productsRes = await fetch(`${targetUrl}/products.json?limit=12`, {
           headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
@@ -173,7 +173,7 @@ export async function POST(request: Request) {
         if (productsRes.ok) {
           const productsData = await productsRes.json();
           if (productsData && productsData.products) {
-            extractedProducts = productsData.products.map((p: any) => ({
+            const fallbackProducts = productsData.products.map((p: any) => ({
               id: p.id,
               title: p.title,
               handle: p.handle,
@@ -183,6 +183,16 @@ export async function POST(request: Request) {
               image: p.images?.[0]?.src || '',
               url: `${targetUrl}/products/${p.handle}`
             }));
+            
+            // Gabungkan produk baru yang belum ada di daftar
+            fallbackProducts.forEach((fp: any) => {
+              if (!extractedProducts.some(ep => ep.handle === fp.handle)) {
+                extractedProducts.push(fp);
+              }
+            });
+            
+            // Pastikan kita tidak melebihi 12 produk untuk UI
+            extractedProducts = extractedProducts.slice(0, 12);
           }
         }
       }
