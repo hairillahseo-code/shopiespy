@@ -67,7 +67,8 @@ export default function BattlePage() {
       setError("Please login on the main page first.");
       return;
     }
-    if (credits === null || (credits <= 0 && credits !== -1)) {
+    const isAdmin = user.email === 'admin@shopiespy.com' || user.email === 'superadmin@shopiespy.com';
+    if (!isAdmin && (credits === null || (credits <= 0 && credits !== -1))) {
       setError("Not enough credits. Please recharge on the main page.");
       return;
     }
