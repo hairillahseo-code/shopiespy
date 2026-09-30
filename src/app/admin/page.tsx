@@ -21,6 +21,12 @@ export default function AdminDashboard() {
   const [settingsLoading, setSettingsLoading] = useState(false);
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const [saveMessage, setSaveMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+
+  // Credit Modal State
+  const [creditModalOpen, setCreditModalOpen] = useState(false);
+  const [creditTargetUserId, setCreditTargetUserId] = useState<string | null>(null);
+  const [creditAmount, setCreditAmount] = useState('50');
+  const [isSubmittingCredit, setIsSubmittingCredit] = useState(false);
   
   const [settings, setSettings] = useState<any>({
     activeGateway: 'stripe',
@@ -151,28 +157,36 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleAddCredits = async (userId: string, currentCredits: number) => {
-    const amountStr = prompt('How many credits do you want to add for this user?', '50');
-    if (!amountStr) return;
-    const amount = parseInt(amountStr);
+  const handleAddCredits = (userId: string, currentCredits: number) => {
+    setCreditTargetUserId(userId);
+    setCreditAmount('50');
+    setCreditModalOpen(true);
+  };
+
+  const submitAddCredits = async () => {
+    if (!creditTargetUserId) return;
+    const amount = parseInt(creditAmount);
     if (isNaN(amount) || amount <= 0) return alert('Invalid amount');
 
+    setIsSubmittingCredit(true);
     try {
       const res = await fetch('/api/admin/users', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, action: 'add_credits', credits: amount })
+        body: JSON.stringify({ userId: creditTargetUserId, action: 'add_credits', credits: amount })
       });
       const data = await res.json();
       
       if (data.success) {
-        setUsers(users.map(u => u.id === userId ? { ...u, credits: u.credits + amount } : u));
-        alert(`Successfully added ${amount} credits.`);
+        setUsers(users.map(u => u.id === creditTargetUserId ? { ...u, credits: u.credits + amount } : u));
+        setCreditModalOpen(false);
       } else {
         alert('Failed to add credits: ' + data.error);
       }
     } catch (e: any) {
       alert('Failed to add credits: ' + e.message);
+    } finally {
+      setIsSubmittingCredit(false);
     }
   };
 
@@ -838,6 +852,75 @@ export default function AdminDashboard() {
         )}
 
       </div>
+
+      {/* Modern Credit Modal */}
+      {creditModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-[#020617]/80 backdrop-blur-sm"
+            onClick={() => !isSubmittingCredit && setCreditModalOpen(false)}
+          ></div>
+          
+          {/* Modal Content */}
+          <div className="relative bg-[#0f172a] border border-white/10 w-full max-w-md rounded-3xl p-8 shadow-2xl shadow-blue-500/10 transform transition-all">
+            
+            {/* Glowing Accent */}
+            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"></div>
+            
+            <div className="mb-6">
+              <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center border border-emerald-500/20 mb-4">
+                <Zap className="w-6 h-6 text-emerald-400" />
+              </div>
+              <h3 className="text-2xl font-black text-white">Add Bonus Credits</h3>
+              <p className="text-slate-400 text-sm mt-2">
+                Instantly grant free credits to user <span className="font-mono text-emerald-400">{creditTargetUserId?.substring(0,8)}</span>. They can use these for AI tools and spy scans immediately.
+              </p>
+            </div>
+
+            <div className="space-y-5">
+              <div>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+                  Amount of Credits
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <DollarSign className="w-4 h-4 text-emerald-400" />
+                  </div>
+                  <input
+                    type="number"
+                    value={creditAmount}
+                    onChange={(e) => setCreditAmount(e.target.value)}
+                    className="w-full bg-[#1e293b] border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white text-lg font-bold outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all"
+                    placeholder="e.g. 50"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-4 border-t border-white/5">
+                <button
+                  type="button"
+                  onClick={() => setCreditModalOpen(false)}
+                  disabled={isSubmittingCredit}
+                  className="flex-1 px-4 py-3 rounded-xl font-bold text-slate-300 hover:text-white bg-slate-800/50 hover:bg-slate-800 border border-white/5 transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={submitAddCredits}
+                  disabled={isSubmittingCredit}
+                  className="flex-1 px-4 py-3 rounded-xl font-bold text-slate-950 bg-emerald-500 hover:bg-emerald-400 shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2"
+                >
+                  {isSubmittingCredit ? 'Adding...' : 'Grant Credits'}
+                </button>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
