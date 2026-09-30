@@ -17,12 +17,24 @@ export async function GET(request: Request) {
 
 export async function PATCH(request: Request) {
   try {
-    const { userId, action } = await request.json();
+    const { userId, action, credits } = await request.json();
     
     if (action === 'ban') {
       const updatedUser = await prisma.profile.update({
         where: { id: userId },
         data: { role: 'banned', credits: 0 }
+      });
+      return NextResponse.json({ success: true, user: updatedUser });
+    }
+
+    if (action === 'add_credits') {
+      const creditsToAdd = Number(credits) || 0;
+      if (creditsToAdd <= 0) {
+        return NextResponse.json({ error: 'Invalid credits amount' }, { status: 400 });
+      }
+      const updatedUser = await prisma.profile.update({
+        where: { id: userId },
+        data: { credits: { increment: creditsToAdd } }
       });
       return NextResponse.json({ success: true, user: updatedUser });
     }

@@ -151,6 +151,31 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleAddCredits = async (userId: string, currentCredits: number) => {
+    const amountStr = prompt('How many credits do you want to add for this user?', '50');
+    if (!amountStr) return;
+    const amount = parseInt(amountStr);
+    if (isNaN(amount) || amount <= 0) return alert('Invalid amount');
+
+    try {
+      const res = await fetch('/api/admin/users', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, action: 'add_credits', credits: amount })
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        setUsers(users.map(u => u.id === userId ? { ...u, credits: u.credits + amount } : u));
+        alert(`Successfully added ${amount} credits.`);
+      } else {
+        alert('Failed to add credits: ' + data.error);
+      }
+    } catch (e: any) {
+      alert('Failed to add credits: ' + e.message);
+    }
+  };
+
   const filterFactor = timeFilter === 'all' ? 1 : timeFilter === '30d' ? 0.6 : 0.2;
   const mockRevenue = totalUsers * 19.50 * filterFactor;
   const totalStoreScans = Math.round(totalUsers * 42 * filterFactor);
@@ -381,12 +406,20 @@ export default function AdminDashboard() {
                           </td>
                           <td className="px-6 py-4 text-right">
                             {user.role !== 'admin' && user.role !== 'banned' && (
-                              <button 
-                                onClick={() => handleBanUser(user.id)}
-                                className="text-xs font-bold text-red-400 hover:text-white bg-red-500/10 hover:bg-red-500/30 border border-red-500/20 px-3 py-1.5 rounded-lg transition-all"
-                              >
-                                Ban User
-                              </button>
+                              <div className="flex items-center justify-end gap-2">
+                                <button 
+                                  onClick={() => handleAddCredits(user.id, user.credits)}
+                                  className="text-xs font-bold text-emerald-400 hover:text-white bg-emerald-500/10 hover:bg-emerald-500/30 border border-emerald-500/20 px-3 py-1.5 rounded-lg transition-all"
+                                >
+                                  + Credits
+                                </button>
+                                <button 
+                                  onClick={() => handleBanUser(user.id)}
+                                  className="text-xs font-bold text-red-400 hover:text-white bg-red-500/10 hover:bg-red-500/30 border border-red-500/20 px-3 py-1.5 rounded-lg transition-all"
+                                >
+                                  Ban
+                                </button>
+                              </div>
                             )}
                           </td>
                         </tr>
