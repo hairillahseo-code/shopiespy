@@ -1,12 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { Header } from './components/Header.tsx';
-import { ShopifyStoreModal } from './components/ShopifyStoreModal.tsx';
-import { CreditsModal } from './components/CreditsModal.tsx';
-import { NotificationDrawer } from './components/NotificationDrawer.tsx';
-import { BulkCsvView } from './components/BulkCsvView.tsx';
-import { BlogPinsView } from './components/BlogPinsView.tsx';
-import { PricingView } from './components/PricingView.tsx';
-import { PRODUCT_PRESETS, ProductData } from './data/presets.ts';
+import { Header } from './components/Header';
+import { ShopifyStoreModal } from './components/ShopifyStoreModal';
+import { CreditsModal } from './components/CreditsModal';
+import { NotificationDrawer } from './components/NotificationDrawer';
+import { BulkCsvView } from './components/BulkCsvView';
+import { BlogPinsView } from './components/BlogPinsView';
+import { PricingView } from './components/PricingView';
+import { PRODUCT_PRESETS, ProductData } from './data/presets';
 
 export default function App() {
   // Navigation & state

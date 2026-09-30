@@ -98,6 +98,7 @@ export const BlogPinsView: React.FC<{
     if (!infographicRef.current) return;
     try {
       const canvas = await html2canvas(infographicRef.current, {
+        // @ts-ignore
         scale: 2, // High resolution
         useCORS: true,
         backgroundColor: '#0f172a' // match background

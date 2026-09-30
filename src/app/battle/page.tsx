@@ -284,7 +284,7 @@ export default function BattlePage() {
                   { label: "Average Order Value (AOV)", a: `$${getAveragePrice(resultA.products)}`, b: `$${getAveragePrice(resultB.products)}` },
                   { label: "Cheapest Item", a: `$${getCheapestPrice(resultA.products)}`, b: `$${getCheapestPrice(resultB.products)}` },
                   { label: "Most Expensive Item", a: `$${getMostExpensivePrice(resultA.products)}`, b: `$${getMostExpensivePrice(resultB.products)}` },
-                  { label: "Est. Monthly Revenue", a: `$${(parseFloat(getAveragePrice(resultA.products)) * resultA.products.length * 125).toLocaleString()}`, b: `$${(parseFloat(getAveragePrice(resultB.products)) * resultB.products.length * 125).toLocaleString()}` },
+                  { label: "Est. Monthly Revenue", a: `$${(parseFloat(getAveragePrice(resultA.products).toString()) * resultA.products.length * 125).toLocaleString()}`, b: `$${(parseFloat(getAveragePrice(resultB.products).toString()) * resultB.products.length * 125).toLocaleString()}` },
                 ].map((row, idx) => {
                   
                   // Simple winner logic for visual styling
