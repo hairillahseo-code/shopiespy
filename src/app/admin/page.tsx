@@ -27,6 +27,11 @@ export default function AdminDashboard() {
   const [creditTargetUserId, setCreditTargetUserId] = useState<string | null>(null);
   const [creditAmount, setCreditAmount] = useState('50');
   const [isSubmittingCredit, setIsSubmittingCredit] = useState(false);
+
+  // Ban Modal State
+  const [banModalOpen, setBanModalOpen] = useState(false);
+  const [banTargetUserId, setBanTargetUserId] = useState<string | null>(null);
+  const [isSubmittingBan, setIsSubmittingBan] = useState(false);
   
   const [settings, setSettings] = useState<any>({
     activeGateway: 'stripe',
@@ -135,25 +140,32 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleBanUser = async (userId: string) => {
-    if (!confirm('Are you sure you want to ban this user and wipe their credits?')) return;
-    
+  const handleBanUser = (userId: string) => {
+    setBanTargetUserId(userId);
+    setBanModalOpen(true);
+  };
+
+  const submitBanUser = async () => {
+    if (!banTargetUserId) return;
+    setIsSubmittingBan(true);
     try {
-      // Menggunakan backend API untuk mengubah status user
       const res = await fetch('/api/admin/users', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, action: 'ban' })
+        body: JSON.stringify({ userId: banTargetUserId, action: 'ban' })
       });
       const data = await res.json();
       
       if (data.success) {
-        setUsers(users.map(u => u.id === userId ? { ...u, role: 'banned', credits: 0 } : u));
+        setUsers(users.map(u => u.id === banTargetUserId ? { ...u, role: 'banned', credits: 0 } : u));
+        setBanModalOpen(false);
       } else {
         alert('Failed to ban user: ' + data.error);
       }
     } catch (e: any) {
       alert('Failed to ban user: ' + e.message);
+    } finally {
+      setIsSubmittingBan(false);
     }
   };
 
@@ -915,6 +927,54 @@ export default function AdminDashboard() {
                   {isSubmittingCredit ? 'Adding...' : 'Grant Credits'}
                 </button>
               </div>
+            </div>
+            
+          </div>
+        </div>
+      )}
+
+      {/* Modern Ban Modal */}
+      {banModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-[#020617]/80 backdrop-blur-sm"
+            onClick={() => !isSubmittingBan && setBanModalOpen(false)}
+          ></div>
+          
+          {/* Modal Content */}
+          <div className="relative bg-[#0f172a] border border-red-500/20 w-full max-w-md rounded-3xl p-8 shadow-2xl shadow-red-500/10 transform transition-all">
+            
+            {/* Glowing Accent */}
+            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-red-500/50 to-transparent"></div>
+            
+            <div className="mb-6">
+              <div className="w-12 h-12 bg-red-500/10 rounded-2xl flex items-center justify-center border border-red-500/20 mb-4">
+                <AlertCircle className="w-6 h-6 text-red-400" />
+              </div>
+              <h3 className="text-2xl font-black text-white">Ban User</h3>
+              <p className="text-slate-400 text-sm mt-2">
+                Are you sure you want to ban user <span className="font-mono text-red-400">{banTargetUserId?.substring(0,8)}</span>? Their credits will be wiped to 0 and they will lose access.
+              </p>
+            </div>
+
+            <div className="flex gap-3 pt-4 border-t border-white/5">
+              <button
+                type="button"
+                onClick={() => setBanModalOpen(false)}
+                disabled={isSubmittingBan}
+                className="flex-1 px-4 py-3 rounded-xl font-bold text-slate-300 hover:text-white bg-slate-800/50 hover:bg-slate-800 border border-white/5 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={submitBanUser}
+                disabled={isSubmittingBan}
+                className="flex-1 px-4 py-3 rounded-xl font-bold text-white bg-red-500 hover:bg-red-400 shadow-lg shadow-red-500/20 transition-all flex items-center justify-center gap-2"
+              >
+                {isSubmittingBan ? 'Banning...' : 'Yes, Ban User'}
+              </button>
             </div>
             
           </div>
