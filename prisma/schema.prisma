@@ -11,6 +11,7 @@ datasource db {
 model Profile {
   id            String          @id // Supabase auth.users ID (UUID)
   email         String          @unique
+  name          String?
   role          String          @default("user") // "user" | "admin"
   credits       Int             @default(3)
   plan          String          @default("free") // "free" | "pro" | "agency"

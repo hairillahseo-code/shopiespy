@@ -29,7 +29,7 @@ export async function POST(request: Request) {
       });
     }
 
-    return NextResponse.json({ success: true, credits: profile.credits });
+    return NextResponse.json({ success: true, credits: profile.credits, name: profile.name, plan: profile.plan });
   } catch (error: any) {
     console.error('Error fetching user credits:', error);
     return NextResponse.json(

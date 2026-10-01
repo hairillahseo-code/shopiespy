@@ -5,7 +5,7 @@ import {
   Search, Radar, TrendingUp, Sparkles, Lock, Eye, CheckCircle2, ChevronRight, 
   BarChart3, Loader2, AlertCircle, LogOut, Gem, Lightbulb, ExternalLink, 
   ShoppingBag, ShieldAlert, DollarSign, Layers, BookOpen, Check, ArrowRight, Zap,
-  CreditCard, ShieldCheck, CheckCheck, Package, Truck, ArrowUpRight, Swords
+  CreditCard, ShieldCheck, CheckCheck, Package, Truck, ArrowUpRight, Swords, User
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
@@ -878,6 +878,9 @@ export default function Home() {
                   <Gem className="w-4 h-4" /> 
                   {(user.email === 'admin@shopiespy.com' || user.email === 'superadmin@shopiespy.com') ? 'Unlimited Credits' : (credits !== null ? `${credits} Credits` : '3 Credits')}
                 </div>
+                <Link href="/settings" className="text-slate-400 hover:text-white transition-colors" title="Account Settings">
+                  <User className="w-5 h-5" />
+                </Link>
                 <button 
                   onClick={() => supabase.auth.signOut()}
                   className="text-slate-400 hover:text-white transition-colors"

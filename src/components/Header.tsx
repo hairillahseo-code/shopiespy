@@ -152,6 +152,13 @@ export const Header: React.FC<HeaderProps> = ({
                       nordic-goods.myshopify.com
                     </p>
                   </div>
+                  <a
+                    href="/settings"
+                    className="w-full text-left px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low flex items-center gap-2 transition-colors cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-[18px] text-primary">person</span>
+                    Account Settings
+                  </a>
                   <button
                     onClick={() => {
                       setProfileDropdownOpen(false);
