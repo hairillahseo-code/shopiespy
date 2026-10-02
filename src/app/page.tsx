@@ -382,6 +382,34 @@ export default function Home() {
       }
     }
 
+    // If PayPal Live mode or if they explicitly want to use PayPal backend
+    if (selectedGateway === 'paypal' && paymentSettings.paypal?.mode === 'live') {
+      try {
+        setCheckoutStep('Creating official PayPal Order Session...');
+        const res = await fetch('/api/checkout/paypal/create-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            planKey: checkoutPlan,
+            userId: user.id,
+            userEmail: user.email,
+          }),
+        });
+        const data = await res.json();
+        if (data.success && data.url) {
+          window.location.href = data.url;
+          return;
+        } else {
+          throw new Error(data.error || 'Failed to create PayPal order');
+        }
+      } catch (err: any) {
+        console.error('PayPal redirect failed, falling back to sandbox verification:', err);
+        showToast(err.message || 'PayPal Error. Please check Admin settings.', 'error', 'Payment Error');
+        setIsCheckingOut(false);
+        return; // Don't fall back to simulation if it's LIVE mode
+      }
+    }
+
     // In Sandbox mode (or if simulating test transaction)
     try {
       await new Promise((r) => setTimeout(r, 650));
