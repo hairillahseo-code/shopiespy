@@ -294,7 +294,30 @@ export default function SettingsPage() {
         </section>
 
         {/* Danger Zone */}
-        <section className="pt-6 border-t border-white/5 flex justify-end">
+        <section className="pt-6 border-t border-white/5 flex justify-between items-center">
+          {user.email !== 'superadmin@shopiespy.com' && user.email !== 'admin@shopiespy.com' ? (
+            <button 
+              onClick={async () => {
+                if (window.confirm('Are you sure you want to delete your account? This action cannot be undone and all your saved data will be lost.')) {
+                  const res = await fetch('/api/user/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: user.id, email: user.email })
+                  });
+                  if (res.ok) {
+                    await handleSignOut();
+                  } else {
+                    alert('Failed to delete account. Please contact support.');
+                  }
+                }
+              }}
+              className="text-xs font-bold text-rose-400 hover:text-white bg-rose-500/10 hover:bg-rose-500/30 border border-rose-500/20 px-4 py-2 rounded-lg transition-colors"
+            >
+              Delete Account
+            </button>
+          ) : (
+            <div></div>
+          )}
           <button 
             onClick={handleSignOut}
             className="text-xs font-bold text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 border border-white/5 px-4 py-2 rounded-lg transition-colors"
