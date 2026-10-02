@@ -24,6 +24,9 @@ export default function SettingsPage() {
   const [profileLoading, setProfileLoading] = useState(false);
   const [profileMessage, setProfileMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null);
 
+  // Delete modal state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
   useEffect(() => {
     const fetchUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -296,25 +299,55 @@ export default function SettingsPage() {
         {/* Danger Zone */}
         <section className="pt-6 border-t border-white/5 flex justify-between items-center">
           {user.email !== 'superadmin@shopiespy.com' && user.email !== 'admin@shopiespy.com' ? (
-            <button 
-              onClick={async () => {
-                if (window.confirm('Are you sure you want to delete your account? This action cannot be undone and all your saved data will be lost.')) {
-                  const res = await fetch('/api/user/delete', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId: user.id, email: user.email })
-                  });
-                  if (res.ok) {
-                    await handleSignOut();
-                  } else {
-                    alert('Failed to delete account. Please contact support.');
-                  }
-                }
-              }}
-              className="text-xs font-bold text-rose-400 hover:text-white bg-rose-500/10 hover:bg-rose-500/30 border border-rose-500/20 px-4 py-2 rounded-lg transition-colors"
-            >
-              Delete Account
-            </button>
+            <>
+              <button 
+                onClick={() => setShowDeleteModal(true)}
+                className="text-xs font-bold text-rose-400 hover:text-white bg-rose-500/10 hover:bg-rose-500/30 border border-rose-500/20 px-4 py-2 rounded-lg transition-colors"
+              >
+                Delete Account
+              </button>
+
+              {/* Custom Delete Confirmation Modal */}
+              {showDeleteModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+                  <div className="bg-slate-900 border border-rose-500/30 rounded-2xl p-6 max-w-sm w-full shadow-[0_0_40px_rgba(244,63,94,0.15)] transform transition-all">
+                    <div className="flex items-center justify-center w-12 h-12 rounded-full bg-rose-500/10 text-rose-500 mb-4 mx-auto">
+                      <AlertCircle className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-xl font-bold text-white text-center mb-2">Delete Account?</h3>
+                    <p className="text-sm text-slate-400 text-center mb-6">
+                      This action cannot be undone. All your saved data, store analyses, and remaining credits will be permanently lost.
+                    </p>
+                    <div className="flex gap-3">
+                      <button 
+                        onClick={() => setShowDeleteModal(false)}
+                        className="flex-1 px-4 py-2.5 rounded-lg text-sm font-bold text-slate-300 bg-slate-800 hover:bg-slate-700 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                      <button 
+                        onClick={async () => {
+                          setShowDeleteModal(false);
+                          const res = await fetch('/api/user/delete', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userId: user.id, email: user.email })
+                          });
+                          if (res.ok) {
+                            await handleSignOut();
+                          } else {
+                            alert('Failed to delete account. Please contact support.');
+                          }
+                        }}
+                        className="flex-1 px-4 py-2.5 rounded-lg text-sm font-bold text-white bg-rose-500 hover:bg-rose-600 shadow-[0_0_15px_rgba(244,63,94,0.3)] transition-colors"
+                      >
+                        Yes, Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
           ) : (
             <div></div>
           )}
