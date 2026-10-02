@@ -256,9 +256,15 @@ export default function Home() {
         if (error) throw error;
         showToast("Welcome back! Your spy tools and credits are ready.", "success", "Login Successful");
       } else {
-        const { error } = await supabase.auth.signUp({ email: cleanEmail, password });
+        const { data, error } = await supabase.auth.signUp({ email: cleanEmail, password });
         if (error) throw error;
-        showToast("Welcome to ShopieSpy! 3 Free Spy Credits have been added to your vault.", "success", "Account Created 🎉");
+        
+        // Supabase returns session as null if email confirmation is required
+        if (data.user && data.session === null) {
+          showToast("Please check your inbox to confirm your email address before logging in.", "info", "Confirmation Required 📧");
+        } else {
+          showToast("Welcome to ShopieSpy! 3 Free Spy Credits have been added to your vault.", "success", "Account Created 🎉");
+        }
       }
       setShowAuth(false);
     } catch (err: any) {
@@ -891,7 +897,7 @@ export default function Home() {
               </div>
             ) : (
               <>
-                <button onClick={() => { setIsLoginMode(true); setShowAuth(true); }} className="text-sm font-medium text-slate-300 hover:text-white transition-colors hidden md:block">
+                <button onClick={() => { setIsLoginMode(true); setShowAuth(true); }} className="text-sm font-medium text-slate-300 hover:text-white transition-colors">
                   Log in
                 </button>
                 <button onClick={() => { setIsLoginMode(false); setShowAuth(true); }} className="bg-white hover:bg-emerald-50 text-slate-900 px-5 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(255,255,255,0.2)]">
