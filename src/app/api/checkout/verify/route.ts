@@ -44,6 +44,14 @@ export async function POST(request: Request) {
 
     let updatedProfile;
     if (existingProfile) {
+      // Anti-abuse: Prevent farming free credits via the Sandbox Simulator
+      if (gateway === 'paypal' && existingProfile.plan !== 'free') {
+        return NextResponse.json(
+          { success: false, error: 'Sandbox demo limit reached. You have already tested the checkout flow.' },
+          { status: 403 }
+        );
+      }
+
       updatedProfile = await prisma.profile.update({
         where: { id: userId },
         data: {
