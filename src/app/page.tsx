@@ -872,7 +872,7 @@ export default function Home() {
             {user ? (
               <div className="flex items-center gap-4">
                 {(user.email === 'admin@shopiespy.com' || user.email === 'superadmin@shopiespy.com') && (
-                  <Link href="/admin" className="hidden md:flex items-center text-xs font-bold text-blue-400 hover:text-blue-300 border border-blue-500/30 px-3 py-1.5 rounded-md bg-blue-500/10 transition-colors">
+                  <Link href="/admin" className="flex items-center text-xs font-bold text-blue-400 hover:text-blue-300 border border-blue-500/30 px-3 py-1.5 rounded-md bg-blue-500/10 transition-colors">
                     Admin Panel
                   </Link>
                 )}
