@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { DEFAULT_SETTINGS } from '../../admin/settings/route';
+import { DEFAULT_SETTINGS } from '@/app/api/admin/settings/route';
 
 async function getPayPalAccessToken(clientId: string, clientSecret: string, isLive: boolean) {
   const baseURL = isLive ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com';
