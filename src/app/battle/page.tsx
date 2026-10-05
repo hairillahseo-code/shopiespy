@@ -89,6 +89,20 @@ export default function BattlePage() {
     setResultA(null);
     setResultB(null);
 
+    if (user.email === 'demo@shopiespy.com') {
+      await new Promise(r => setTimeout(r, 1500));
+      setResultA({ 
+        theme: "Dawn", apps: ["Klaviyo"], 
+        products: [{ title: "Demo Product A1", handle: "demo-a1", type: "Apparel" }], cleanDomain: urlA 
+      });
+      setResultB({ 
+        theme: "Sense", apps: ["Loox"], 
+        products: [{ title: "Demo Product B1", handle: "demo-b1", type: "Accessories" }], cleanDomain: urlB 
+      });
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const [resA, resB] = await Promise.all([
         fetch('/api/analyze-store', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url: urlA }) }),
@@ -166,7 +180,7 @@ export default function BattlePage() {
           <div className="flex items-center gap-4">
             {user ? (
               <div className="flex items-center gap-4">
-                {(user.email === 'admin@shopiespy.com' || user.email === 'superadmin@shopiespy.com') && (
+                {(user.email === 'admin@shopiespy.com' || user.email === 'superadmin@shopiespy.com' || user.email === 'demo@shopiespy.com') && (
                   <Link href="/admin" className="hidden md:flex items-center text-xs font-bold text-blue-400 hover:text-blue-300 border border-blue-500/30 px-3 py-1.5 rounded-md bg-blue-500/10 transition-colors">
                     Admin Panel
                   </Link>

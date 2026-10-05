@@ -279,6 +279,17 @@ export default function Home() {
     if (credits === null || credits <= 0) { setShowPaywall(true); return; }
 
     setRewritingProduct(productTitle);
+
+    if (user.email === 'demo@shopiespy.com') {
+      await new Promise(r => setTimeout(r, 1200));
+      setRewriteResult({ 
+        title: productTitle, 
+        html: "<p><strong>🔥 High Converting Demo Rewrite!</strong> This is a mock AI generated response to save real API costs during the demo. Imagine a beautifully rewritten SEO description here!</p>" 
+      });
+      showToast(`AI rewritten copy ready for ${productTitle} (Mock)`, "success", "Rewritten Successfully ✨");
+      setRewritingProduct(null);
+      return;
+    }
     try {
       const success = await deductCredit();
       if (!success) throw new Error("Failed to deduct credit.");
@@ -307,6 +318,23 @@ export default function Home() {
     setError("");
     setIsLoading(true);
     setResult(null);
+
+    if (user.email === 'demo@shopiespy.com') {
+      await new Promise(r => setTimeout(r, 1500));
+      setResult({
+        theme: "Dawn (Free Shopify Theme)",
+        apps: ["Klaviyo", "Loox Reviews", "PageFly"],
+        products: [
+          { title: "Viral Demo Product 1", handle: "viral-demo-1", publishedAt: new Date().toISOString(), type: "Accessories" },
+          { title: "Trending Product 2", handle: "trending-demo-2", publishedAt: new Date().toISOString(), type: "Apparel" },
+          { title: "Bestseller 3", handle: "bestseller-3", publishedAt: new Date().toISOString(), type: "Home" }
+        ],
+        cleanDomain: "demo-competitor.myshopify.com"
+      });
+      showToast("Successfully scanned demo store (Mock Data)!", "success", "X-Ray Scan Complete 🎯");
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const res = await fetch('/api/analyze-store', {
@@ -899,7 +927,7 @@ export default function Home() {
           <div className="flex items-center gap-4">
             {user ? (
               <div className="flex items-center gap-4">
-                {(user.email === 'admin@shopiespy.com' || user.email === 'superadmin@shopiespy.com') && (
+                {(user.email === 'admin@shopiespy.com' || user.email === 'superadmin@shopiespy.com' || user.email === 'demo@shopiespy.com') && (
                   <Link href="/admin" className="flex items-center text-xs font-bold text-blue-400 hover:text-blue-300 border border-blue-500/30 px-3 py-1.5 rounded-md bg-blue-500/10 transition-colors">
                     Admin Panel
                   </Link>
@@ -1806,7 +1834,7 @@ export default function Home() {
             </div>
 
             <div className="flex items-center gap-3">
-              {(user.email === 'admin@shopiespy.com' || user.email === 'superadmin@shopiespy.com') && (
+              {(user.email === 'admin@shopiespy.com' || user.email === 'superadmin@shopiespy.com' || user.email === 'demo@shopiespy.com') && (
                 <Link href="/admin" className="text-xs font-bold text-blue-400 hover:text-blue-300 border border-blue-500/30 px-3.5 py-2 rounded-xl bg-blue-500/10 transition-colors">
                   Admin Panel
                 </Link>

@@ -61,6 +61,10 @@ export default function SettingsPage() {
 
   const handlePasswordUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (user?.email === 'demo@shopiespy.com') {
+      setMessage({ text: 'Demo account cannot change password.', type: 'error' });
+      return;
+    }
     if (newPassword !== confirmPassword) {
       setMessage({ text: 'Passwords do not match.', type: 'error' });
       return;

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
 
 interface HeaderProps {
   activeTab: 'single' | 'bulk' | 'blog' | 'pricing';
@@ -20,6 +21,18 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenStoreModal,
 }) => {
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const email = session?.user?.email;
+      if (email === 'admin@shopiespy.com' || email === 'superadmin@shopiespy.com' || email === 'demo@shopiespy.com') {
+        setIsAdmin(true);
+      }
+    };
+    checkUser();
+  }, []);
 
   return (
     <header className="w-full sticky top-0 z-40 bg-surface-container-lowest border-b border-outline-variant shadow-xs">
@@ -152,6 +165,15 @@ export const Header: React.FC<HeaderProps> = ({
                       nordic-goods.myshopify.com
                     </p>
                   </div>
+                  {isAdmin && (
+                    <a
+                      href="/admin"
+                      className="w-full text-left px-4 py-2 text-sm text-emerald-600 hover:bg-surface-container-low flex items-center gap-2 transition-colors cursor-pointer font-bold border-b border-outline-variant/60"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">shield_person</span>
+                      Super Admin Dashboard
+                    </a>
+                  )}
                   <a
                     href="/settings"
                     className="w-full text-left px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low flex items-center gap-2 transition-colors cursor-pointer"

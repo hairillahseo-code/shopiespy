@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 export default function AdminDashboard() {
   const router = useRouter();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
   const [activeTab, setActiveTab] = useState<'overview' | 'payments'>('overview');
   const [timeFilter, setTimeFilter] = useState<'7d' | '30d' | 'all'>('all');
   
@@ -71,12 +72,13 @@ export default function AdminDashboard() {
 
   const checkAdminAccess = async () => {
     const { data: { session } } = await supabase.auth.getSession();
-    const isAllowedEmail = session?.user?.email === 'admin@shopiespy.com' || session?.user?.email === 'superadmin@shopiespy.com';
+    const isAllowedEmail = session?.user?.email === 'admin@shopiespy.com' || session?.user?.email === 'superadmin@shopiespy.com' || session?.user?.email === 'demo@shopiespy.com';
     
     if (!session || !isAllowedEmail) {
       router.push('/');
     } else {
       setIsAdmin(true);
+      if (session?.user?.email) setUserEmail(session.user.email);
       fetchAdminData();
       fetchSettings();
     }
@@ -117,6 +119,10 @@ export default function AdminDashboard() {
 
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (userEmail === 'demo@shopiespy.com') {
+      setSaveMessage({ text: 'Demo accounts are not allowed to change payment settings.', type: 'error' });
+      return;
+    }
     setIsSavingSettings(true);
     setSaveMessage(null);
 
@@ -147,6 +153,11 @@ export default function AdminDashboard() {
 
   const submitBanUser = async () => {
     if (!banTargetUserId) return;
+    if (userEmail === 'demo@shopiespy.com') {
+      alert('Demo accounts are not allowed to ban users.');
+      setBanModalOpen(false);
+      return;
+    }
     setIsSubmittingBan(true);
     try {
       const res = await fetch('/api/admin/users', {
@@ -169,6 +180,31 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleDeleteUser = async (userId: string, email: string) => {
+    if (userEmail === 'demo@shopiespy.com') {
+      alert('Demo accounts cannot delete users.');
+      return;
+    }
+    if (!confirm(`Are you sure you want to permanently delete ${email}? This action cannot be undone.`)) return;
+    
+    try {
+      const res = await fetch('/api/user/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, email })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setUsers(users.filter(u => u.id !== userId));
+        alert('User deleted successfully.');
+      } else {
+        alert('Failed to delete user: ' + data.error);
+      }
+    } catch (e: any) {
+      alert('Error: ' + e.message);
+    }
+  };
+
   const handleAddCredits = (userId: string, currentCredits: number) => {
     setCreditTargetUserId(userId);
     setCreditAmount('50');
@@ -177,6 +213,11 @@ export default function AdminDashboard() {
 
   const submitAddCredits = async () => {
     if (!creditTargetUserId) return;
+    if (userEmail === 'demo@shopiespy.com') {
+      alert('Demo accounts are not allowed to add user credits.');
+      setCreditModalOpen(false);
+      return;
+    }
     const amount = parseInt(creditAmount);
     if (isNaN(amount) || amount <= 0) return alert('Invalid amount');
 
@@ -444,6 +485,16 @@ export default function AdminDashboard() {
                                   className="text-xs font-bold text-red-400 hover:text-white bg-red-500/10 hover:bg-red-500/30 border border-red-500/20 px-3 py-1.5 rounded-lg transition-all"
                                 >
                                   Ban
+                                </button>
+                              </div>
+                            )}
+                            {user.email === 'demo@shopiespy.com' && userEmail !== 'demo@shopiespy.com' && (
+                              <div className="flex items-center justify-end gap-2 mt-2">
+                                <button 
+                                  onClick={() => handleDeleteUser(user.id, user.email || '')}
+                                  className="text-xs font-bold text-red-400 hover:text-white bg-red-500/10 hover:bg-red-500/30 border border-red-500/20 px-3 py-1.5 rounded-lg transition-all"
+                                >
+                                  Delete Demo
                                 </button>
                               </div>
                             )}
